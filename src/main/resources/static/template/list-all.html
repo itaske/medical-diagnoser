@@ -36,10 +36,12 @@
 </head>
 <body>
 <div class="container">
-    <h3>Diagnosis</h3>
+    <h3>All Diagnosis</h3>
+    <input type="text" name="searchTerm" placeholder="Filter by Diagnosis name"
+           ngModel="searchTerm" (ngModelChange)="search()"/>
     <div class="card" ng-repeat="diagnosis in listOfDiagnosis">
-        <p>Name: {{diagnosis.Issue.Name}}  Accuracy: {{diagnosis.Issue.Accuracy}}  icdName: {{diagnosis.Issue.IcdName}}</p>
-        Valid: true
+        <p>Name: {{diagnosis.Issue.Name}}  Accuracy: {{diagnosis.Issue.Accuracy}}%  icdName: {{diagnosis.Issue.IcdName}}</p>
+        Valid: {{diagnosis.valid}}
     </div>
 </div>
 </body>

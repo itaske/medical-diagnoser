@@ -114,7 +114,44 @@ app.controller('homeController', function ($scope, $http, $location, $route) {
             }
           };
 
-          $scope.submit = function(){}
-          console.log($scope.selection);
+          $scope.submit = function(){
+            console.log($scope.selection);
+             $http({
+                                       method: 'POST',
+                                       url: 'http://localhost:8080/medic/validate-diagnosis',
+                                       data: $scope.selection
+                                       }).then(function(response){
+                                       $scope.listOfDiagnosis = response.data;
+                                         $location.path("/list-all");
+                                                   $route.reload();
+                                       }, function(errResponse) {
+                                          $scope.errorMessage = "Error while Getting Diagnosis"
+                                          + errResponse.data.
+                                          errorMessage;
+                                          });
+
+
+          }
+
         });
+
+        app.controller('diagnosisController', function ($scope, $http, $location, $route) {
+          $http({
+                           method: 'GET',
+                           url: 'http://localhost:8080/medic/diagnosis'
+                           }).then(function(response){
+                           $scope.listOfDiagnosis = response.data;
+                           }, function(errResponse) {
+                              $scope.errorMessage = "Error while Getting Symptoms"
+                              + errResponse.data.
+                              errorMessage;
+                              });
+
+                              $scope.search = function(){
+                              console.log("Entered");
+                              console.log($scope.searchTerm);
+                                        $scope.listOfDiagnosis = $scope.listOfDiagnosis.filter((val) => val.name.toLowerCase().includes($scope.searchTerm));
+                                      }
+        }
+        );
 

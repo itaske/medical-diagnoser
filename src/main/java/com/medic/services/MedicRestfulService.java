@@ -1,7 +1,6 @@
 package com.medic.services;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,12 +8,12 @@ import com.medic.configs.MedicConfig;
 import com.medic.dto.SymptomDTO;
 import com.medic.dto.Token;
 import com.medic.models.*;
-import com.medic.models.Record;
 import com.medic.respositories.DiagnosisRepository;
-import com.medic.respositories.RecordRepository;
 import com.medic.respositories.SpecialisationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -45,9 +44,6 @@ public class MedicRestfulService {
 
 
     @Autowired
-    RecordRepository recordRepository;
-
-    @Autowired
     DiagnosisRepository diagnosisRepository;
 
     @Autowired
@@ -64,6 +60,11 @@ public class MedicRestfulService {
 
         return response;
 
+    }
+
+    public List<Diagnosis> getAllDiagnosis(int size, int currentPage){
+        Pageable pageable = PageRequest.of(currentPage, size);
+        return diagnosisRepository.findAll(pageable).getContent();
     }
 
     public List<Diagnosis> diagnose(SymptomDTO symptomDTO){
@@ -91,20 +92,27 @@ public class MedicRestfulService {
             List<Specialisation> specialisations = new ArrayList<>();
             for(JsonNode n: node.get("Specialisation")){
                 Specialisation s = objectMapper.convertValue(n, Specialisation.class);
+                s = specialisationRepository.save(s);
                 specialisations.add(s);
             }
-            diagnosis.setSpecialisation(specialisations);
+//            diagnosis.setSpecialisation(specialisations);
+            diagnosis.setSpecialisation(null);
+            diagnosis.setValid(false);
             diagnosisList.add(diagnosis);
         }
-//        diagnosisList = diagnosisRepository.saveAll(diagnosisList);
+        diagnosisList = diagnosisRepository.saveAll(diagnosisList);
         return diagnosisList;
 
     }
 
 
-    public Record rateDiagnosis(com.medic.models.Record record){
-        Record savedRecord = recordRepository.save(record);
-        return savedRecord;
+    public List<Diagnosis> updateValidDiagnosis(List<Diagnosis> validDiagnosis){
+        List<Diagnosis> diagnoses = diagnosisRepository.findAllById(validDiagnosis.stream()
+        .map(d->d.getId()).collect(Collectors.toList()));
+
+        diagnoses =diagnoses.stream().map(d->{d.setValid(true); return d;}).collect(Collectors.toList());
+
+        return diagnosisRepository.saveAllAndFlush(diagnoses);
     }
     public Token accessToken(){
         if (token.hasExpired()){

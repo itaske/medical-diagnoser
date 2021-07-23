@@ -20,7 +20,7 @@ public class SwaggerDocConfig {
        return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/**"))
+                .paths(PathSelectors.ant("/medic/**"))
                 .build()
                 .apiInfo(getAPiInfo());
     }

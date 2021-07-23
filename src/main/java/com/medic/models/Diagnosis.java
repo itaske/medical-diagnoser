@@ -24,4 +24,6 @@ public class Diagnosis {
     @OneToMany
     private List<Specialisation> specialisation;
 
+    private Boolean valid;
+
 }
