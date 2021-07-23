@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "diagnosis")
@@ -20,7 +21,7 @@ public class Diagnosis {
     private Issue issue;
 
     @JsonProperty("Specialisation")
-    @OneToOne
-    private Specialisation specialisation;
+    @OneToMany
+    private List<Specialisation> specialisation;
 
 }

@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class Issue implements Serializable {
 
       @JsonProperty("ID")
-      @Column(insertable = false, updatable = false)
+      @Column(name = "issue_id")
       private Long id;
 
       @JsonProperty("Name")

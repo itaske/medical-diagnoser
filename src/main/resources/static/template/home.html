@@ -20,19 +20,19 @@
 
         <div class="container-fluid" style="display:{{display_value}}" ng-model="display_value" ng-model="symptoms">
             <div class="row">
-                <div class="col-1">Gender</div>
-                <input type="radio" name="gender" class="col-1" value="male" checked ngModel/>Male
-                <input type="radio" name="gender" class="col-1" value="female" ngModel/>Female
+                <div class="col-2">Gender</div>
+                <input type="radio" name="gender" class="col-1" value="male" checked ng-model="gender"/>Male
+                <input type="radio" name="gender" class="col-1" value="female" ng-model="gender"/>Female
             </div>
             <div class="row">
-                <div class="col-2"/>Year of Birth</div><input class="col-2" type="text" id="yearOfBirth" name="yearOfBirth" #yearOfBirth/>
+                <input width="15" size="15" ng-model="yearOfBirth" class="col-2" type="text" id="yearOfBirth" placeholder="Year of Birth" name="yearOfBirth" #yearOfBirth/>
         </div>
         <div class="row">
-            <h3 class="col-5">Choose from Symptoms</h3>
+            <h2 class="col-5">Choose from Symptoms</h2>
             <div class="col-1">
 
             </div>
-            <h3 class="col-5">Selected Symptoms</h3>
+            <h2 class="col-5">Selected Symptoms</h2>
         </div>
         <div class="row">
             <div class="col-5">
@@ -41,15 +41,17 @@
                 </select>
             </div>
             <div class="col-1">
-                <div class="form-group">
-                    <button type="button" ng-click="addSymptom(currentSymptom)" class="btn btn-primary btn-sm">
-                        >>>
-                    </button>
-                </div>
-                <div class="form-group">
-                    <button type="button" ng-click="removeSymptom(currentSymptom)" class="btn btn-warning btn-sm">
-                        <<<
-                    </button>
+                <div>
+                    <div class="form-group">
+                        <button type="button" ng-click="addSymptom(currentSymptom)" class="btn btn-primary btn-sm">
+                            >>>
+                        </button>
+                    </div>
+                    <div class="form-group col-2">
+                        <button type="button" ng-click="removeSymptom(currentSymptom)" class="btn btn-warning btn-sm">
+                            <<<
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-6">

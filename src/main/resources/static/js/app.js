@@ -3,20 +3,28 @@ var app = angular.module('medicsystem', ['ngRoute', 'ngResource']);
 
 app.config(function ($routeProvider){
     $routeProvider
+    .when('/rate/:parameters', {
+           templateUrl: '/template/rate.html',
+           controller: 'rateController'
+    })
     .when('/list-all', {
-           templateUrl: '/template/list-all.html',
-           controller: 'listController'
-    }).otherwise({
+    templateUrl:'/template/list-all.html',
+    controller:'diagnosisController'
+    })
+    .otherwise({
     redirectTo: '/home',
     controller: 'homeController',
     templateUrl: '/template/home.html'});
 });
 
-app.controller('homeController', function ($scope, $http) {
+
+//Home Controller; Display Symptoms select and diagnose
+app.controller('homeController', function ($scope, $http, $location, $route) {
             $scope.symptoms = [];
 	    $scope.selectedSymptoms = [];
 	      $http({
                  method: 'GET',
+                 cache: true,
                  url: 'http://localhost:8080/medic/symptoms'
                  }).then(function(response){
                  $scope.symptoms = response.data;
@@ -51,8 +59,62 @@ app.controller('homeController', function ($scope, $http) {
 	      }else{
 	      $scope.display_value = "none";
 	      }
+	    };
+
+	    $scope.diagnoseSymptoms = function(){
+	    console.log("Diagnosing.....")
+	    $scope.selectedSymptoms.forEach(s=>{delete s['$$hashKey']})
+
+	      var parameters = JSON.stringify({gender:$scope.gender, yearOfBirth:$scope.yearOfBirth, symptoms:$scope.selectedSymptoms});
+	      console.log(parameters);
+            $location.path("/rate/"+parameters);
+            $route.reload();
 	    }
 
-
 	    });
+
+
+// Rate Diagnosis Controller
+
+	    app.controller('rateController', function($scope, $http, $location, $routeParams, $route) {
+
+          $scope.parameters = $routeParams.parameters;
+
+          console.log($scope.parameters);
+            $http({
+                           method: 'POST',
+                           url: 'http://localhost:8080/medic/diagnosis',
+                           data: $scope.parameters
+                           }).then(function(response){
+                           $scope.listOfDiagnosis = response.data;
+                           $scope.selection = [];
+                           $scope.listOfDiagnosis.forEach(l=>{
+                           $scope.selection.push(l);
+                           })
+                           }, function(errResponse) {
+                              $scope.errorMessage = "Error while Getting Diagnosis"
+                              + errResponse.data.
+                              errorMessage;
+                              });
+
+
+
+          // Toggle selection for a given fruit by name
+          $scope.toggleSelection = function toggleSelection(diagnosis) {
+            var idx = $scope.selection.indexOf(diagnosis);
+
+            // Is currently selected
+            if (idx > -1) {
+              $scope.selection.splice(idx, 1);
+            }
+
+            // Is newly selected
+            else {
+              $scope.selection.push(diagnosis);
+            }
+          };
+
+          $scope.submit = function(){}
+          console.log($scope.selection);
+        });
 

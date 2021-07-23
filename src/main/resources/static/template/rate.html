@@ -38,9 +38,12 @@
 <div class="container">
     <h3>Diagnosis</h3>
     <div class="card" ng-repeat="diagnosis in listOfDiagnosis">
-        <p>Name: {{diagnosis.Issue.Name}}  Accuracy: {{diagnosis.Issue.Accuracy}}  icdName: {{diagnosis.Issue.IcdName}}</p>
-        Valid: true
+        <p>Name: {{diagnosis.Issue.Name}}  Accuracy: {{diagnosis.Issue.Accuracy}}%  icdName: {{diagnosis.Issue.IcdName}}</p>
+        <input type="checkbox" name="selectedDiagnosis[]" value="{{diagnosis}}"
+               ng-checked="listOfDiagnosis.indexOf(diagnosis) > -1"
+               ng-click = "toggleSelection(diagnosis)">Valid</input>
     </div>
+    <button class="btn btn-primary" ng-click="submit()">Submit Categorization</button>
 </div>
 </body>
 </html>

@@ -1,13 +1,18 @@
 package com.medic.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medic.configs.MedicConfig;
 import com.medic.dto.SymptomDTO;
 import com.medic.dto.Token;
-import com.medic.models.Diagnosis;
+import com.medic.models.*;
 import com.medic.models.Record;
-import com.medic.models.Symptom;
+import com.medic.respositories.DiagnosisRepository;
 import com.medic.respositories.RecordRepository;
+import com.medic.respositories.SpecialisationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
@@ -18,13 +23,12 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +46,12 @@ public class MedicRestfulService {
 
     @Autowired
     RecordRepository recordRepository;
+
+    @Autowired
+    DiagnosisRepository diagnosisRepository;
+
+    @Autowired
+    SpecialisationRepository specialisationRepository;
 
 
     @Cacheable(value = "symptomsCache")
@@ -63,8 +73,31 @@ public class MedicRestfulService {
         String formattedURL = String.format("%s&gender=%s&year_of_birth=%s&symptoms=%s&token=%s", medicConfig.getDiagnosisURL(),
                 symptomDTO.getGender().toString(), symptomDTO.getYearOfBirth(), symptoms, accessToken);
 
-        List<Diagnosis> diagnoses = restTemplate.getForObject(formattedURL, ArrayList.class);
-        return diagnoses;
+        String response = restTemplate.getForObject(formattedURL, String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        JsonNode jsonParser = null;
+        try {
+            jsonParser = objectMapper.readTree(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<Diagnosis> diagnosisList = new ArrayList<>();
+        for (Iterator<JsonNode> it = jsonParser.elements(); it.hasNext(); ) {
+            JsonNode node = it.next();
+            Diagnosis diagnosis = new Diagnosis();
+            diagnosis.setIssue(objectMapper.convertValue(node.get("Issue"), Issue.class));
+            List<Specialisation> specialisations = new ArrayList<>();
+            for(JsonNode n: node.get("Specialisation")){
+                Specialisation s = objectMapper.convertValue(n, Specialisation.class);
+                specialisations.add(s);
+            }
+            diagnosis.setSpecialisation(specialisations);
+            diagnosisList.add(diagnosis);
+        }
+//        diagnosisList = diagnosisRepository.saveAll(diagnosisList);
+        return diagnosisList;
 
     }
 
