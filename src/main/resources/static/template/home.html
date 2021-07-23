@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="panel panel-default">
+        <div class="alert alert-success">
+      <span class="lead">
+        Welcome to Medic System
+      </span>
+        </div>
+        <div class="panel-body">
+            <div class="alert alert-info">
+                <ul>
+                    <li>
+                        Please click on <a href="" ng-click="displaySymptoms()"><strong>Diagnose Symptom</strong></a> to diagnose symptoms
+                    </li>
+                    <li>
+                        Please click on <a href="#!list-all"></a><strong> List All Diagnoses </strong></a> to get all diagnoses
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container-fluid" style="display:{{display_value}}" ng-model="display_value" ng-model="symptoms">
+            <div class="row">
+                <div class="col-1">Gender</div>
+                <input type="radio" name="gender" class="col-1" value="male" checked ngModel/>Male
+                <input type="radio" name="gender" class="col-1" value="female" ngModel/>Female
+            </div>
+            <div class="row">
+                <div class="col-2"/>Year of Birth</div><input class="col-2" type="text" id="yearOfBirth" name="yearOfBirth" #yearOfBirth/>
+        </div>
+        <div class="row">
+            <h3 class="col-5">Choose from Symptoms</h3>
+            <div class="col-1">
+
+            </div>
+            <h3 class="col-5">Selected Symptoms</h3>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                <select id="symptoms" multiple ng-model="currentSymptom" class="form-control">
+                    <option ng-value="symptom" ng-repeat = "symptom in symptoms">{{symptom.Name}}</option>
+                </select>
+            </div>
+            <div class="col-1">
+                <div class="form-group">
+                    <button type="button" ng-click="addSymptom(currentSymptom)" class="btn btn-primary btn-sm">
+                        >>>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <button type="button" ng-click="removeSymptom(currentSymptom)" class="btn btn-warning btn-sm">
+                        <<<
+                    </button>
+                </div>
+            </div>
+            <div class="col-6">
+                <select id="selected-symptoms" multiple="multiple" class="form-control" ng-model="currentSymptom">
+                    <option ng-value="selected" ng-repeat = "selected in selectedSymptoms">{{selected.Name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <button class="btn btn-primary" ng-click="diagnoseSymptoms()" style="padding:5px 5px; margin: 10px">Diagnose Symptoms</button>
+        </div>
+    </div>
+
+</div>
+</div>
