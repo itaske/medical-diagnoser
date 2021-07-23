@@ -42,7 +42,6 @@ public class MedicRestfulService {
     @Autowired
     Token token;
 
-
     @Autowired
     DiagnosisRepository diagnosisRepository;
 
@@ -50,6 +49,10 @@ public class MedicRestfulService {
     SpecialisationRepository specialisationRepository;
 
 
+    /**
+     * Get the Available Symptoms on the System
+     * @return the List of Symptoms
+     */
     @Cacheable(value = "symptomsCache")
     public List<Symptom> getAvailableSymptoms(){
        System.out.println("Entered here to get symptoms");
@@ -62,11 +65,23 @@ public class MedicRestfulService {
 
     }
 
+    /**
+     * Get All the Diagnosis in the System
+     * @param size the number of records to return
+     * @param currentPage the current page of the records
+     * @return
+     */
     public List<Diagnosis> getAllDiagnosis(int size, int currentPage){
         Pageable pageable = PageRequest.of(currentPage, size);
         return diagnosisRepository.findAll(pageable).getContent();
     }
 
+
+    /**
+     * Diagnose Symptoms
+     * @param symptomDTO
+     * @return the List of Diagnosis as result of the symptoms
+     */
     public List<Diagnosis> diagnose(SymptomDTO symptomDTO){
         String accessToken = accessToken().getToken();
         String symptoms = symptomDTO.getSymptoms().stream().map(symptom-> String.valueOf(symptom.getId()))
@@ -114,6 +129,11 @@ public class MedicRestfulService {
 
         return diagnosisRepository.saveAllAndFlush(diagnoses);
     }
+
+    /**
+     * Get the Access Token of the Medic Api
+     * @return token
+     */
     public Token accessToken(){
         if (token.hasExpired()){
             HttpHeaders headers = new HttpHeaders();
@@ -129,6 +149,11 @@ public class MedicRestfulService {
         return token;
     }
 
+
+    /**
+     * Calculate the Bearer Token
+     * @return bearerToken
+     */
     private String bearerToken(){
         System.out.println(medicConfig);
         byte[] secretBytes = medicConfig.getSecretKey().getBytes(StandardCharsets.UTF_8);
